@@ -1,5 +1,5 @@
-const UsersCollection = require('../models/users')
-const ExercisesCollection = require('../models/exercises')
+const UserCollection = require('../models/User')
+const ExerciseCollection = require('../models/Exercise')
 const { StatusCodes } = require('http-status-codes')
 
 const createUser = (req, res) => {
