@@ -3,11 +3,12 @@ const ExerciseCollection = require('../models/Exercise')
 const { StatusCodes } = require('http-status-codes')
 
 const createUser = async (req, res) => {
-	//RETURN json (username: ... _id: ...)
 	const { username: newUser } = req.body
+	//creating a new User in the DB
 	await UserCollection.create({
 		username: newUser,
 	})
+	//Getting that created user from the db to get de generated _id, ***i think that every username should be unique but the example allows ditto entries
 	const createdUser = await UserCollection.findOne({
 		username: newUser,
 	})
@@ -17,10 +18,20 @@ const createUser = async (req, res) => {
 	})
 }
 
-const getAllUsers = (req, res) => {
+const getAllUsers = async (req, res) => {
 	//RETURN AN ARRAY NO JSON
 	//Each element in the array returned from GET /api/users is an object literal containing a user's username and _id.
-	res.send('getAllUsers controller')
+	//Check when sending exercise probably gonna need to change.
+	const usersList = await UserCollection.find()
+	const usernamesArray = new Array()
+
+	//creating an array with just username and _id from all entries retrieved from the db
+	Object.values(usersList).forEach((user) => {
+		const newUser = { username: user.username, _id: user._id }
+		usernamesArray.push(newUser)
+	})
+
+	res.status(StatusCodes.OK).send(usernamesArray)
 }
 
 const createExercise = (req, res) => {
@@ -41,8 +52,17 @@ const getLogs = (req, res) => {
 	res.send('getLogs controller')
 }
 
-const staticTesting = (req, res) => {
-	res.send('staticTesting controller')
+const staticTesting = async (req, res) => {
+	//Get All Users testing
+	const usersList = await UserCollection.find()
+	const usernamesArray = new Array()
+
+	Object.values(usersList).forEach((user) => {
+		const newUser = { username: user.username, _id: user._id }
+		usernamesArray.push(newUser)
+	})
+	console.log(usernamesArray)
+	res.send(usernamesArray)
 }
 
 module.exports = {
