@@ -1,10 +1,6 @@
 const mongoose = require('mongoose')
 
 const exerciseSchema = new mongoose.Schema({
-	username: {
-		type: String,
-		required: [true, 'username must be provided'],
-	},
 	description: {
 		type: String,
 		required: [true, 'description must be provided'],
