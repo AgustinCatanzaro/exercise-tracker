@@ -34,10 +34,53 @@ const getAllUsers = async (req, res) => {
 	res.status(StatusCodes.OK).send(usernamesArray)
 }
 
-const createExercise = (req, res) => {
+const createExercise = async (req, res) => {
 	//You can POST to /api/users/:_id/exercises with form data description, duration, and optionally date. If no date is supplied, the current date will be used.
 	//The response returned from POST /api/users/:_id/exercises will be the user object with the exercise fields added.
-	res.send('createExercise controller')
+	const { _id: userId } = req.params
+	const { description, duration } = req.body
+	let { date } = req.body
+
+	try {
+		//if the params received is an unix, we need to parseInt it first to create the date
+		;/^\d+$/.test(date)
+			? (date = new Date(parseInt(date)))
+			: (date = new Date(date))
+
+		//checking if the params received is not valid/empty if it is we use dont give the param to the schema so it use the default one.
+		if (isNaN(date)) {
+			await ExerciseCollection.create({
+				description: description,
+				duration: duration,
+				createdBy: userId,
+			})
+		} else {
+			await ExerciseCollection.create({
+				description: description,
+				duration: duration,
+				date: date.toUTCString(),
+				createdBy: userId,
+			})
+		}
+
+		const userResponse = await UserCollection.findById({
+			_id: userId,
+		})
+		const exerciseResponse = await ExerciseCollection.findOne({
+			description: description,
+			createdBy: userId,
+		})
+		res.status(StatusCodes.OK).json({
+			_id: userId,
+			username: userResponse.username,
+			date: exerciseResponse.date,
+			duration: exerciseResponse.duration,
+			description: exerciseResponse.description,
+		})
+	} catch (error) {
+		console.log(error)
+	}
+	//might need to reformat date to coincide with example response... the exercise descrp is not unique, need to test what happend if i create 2 exercise with same descript and creatdby, it might break.
 }
 
 const getLogs = (req, res) => {
@@ -54,15 +97,41 @@ const getLogs = (req, res) => {
 
 const staticTesting = async (req, res) => {
 	//Get All Users testing
-	const usersList = await UserCollection.find()
-	const usernamesArray = new Array()
-
-	Object.values(usersList).forEach((user) => {
-		const newUser = { username: user.username, _id: user._id }
-		usernamesArray.push(newUser)
-	})
-	console.log(usernamesArray)
-	res.send(usernamesArray)
+	// const usersList = await UserCollection.find()
+	// const usernamesArray = new Array()
+	// Object.values(usersList).forEach((user) => {
+	// 	const newUser = { username: user.username, _id: user._id }
+	// 	usernamesArray.push(newUser)
+	// })
+	// console.log(usernamesArray)
+	// res.send(usernamesArray)
+	//CREATING EXERCISE TESTING
+	// const { description, duration } = req.body
+	// try {
+	// 	let { date } = req.body
+	// 	//if the params received is an unix, we need to parseInt it first to create the date
+	// 	;/^\d+$/.test(date)
+	// 		? (date = new Date(parseInt(date)))
+	// 		: (date = new Date(date))
+	// 	//checking if the params received is not valid/empty if it is we use dont give the param to the schema so it use the default one.
+	// 	if (isNaN(date)) {
+	// 		await ExerciseCollection.create({
+	// 			description: description,
+	// 			duration: duration,
+	// 			createdBy: '641cb4ef73dcc7d460c41e68',
+	// 		})
+	// 	} else {
+	// 		await ExerciseCollection.create({
+	// 			description: description,
+	// 			duration: duration,
+	// 			date: date.toUTCString(),
+	// 			createdBy: '641cb4ef73dcc7d460c41e68',
+	// 		})
+	// 	}
+	// } catch (error) {
+	// 	console.log(error)
+	// }
+	// res.send('testing route')
 }
 
 module.exports = {
