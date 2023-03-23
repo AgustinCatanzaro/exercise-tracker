@@ -2,9 +2,19 @@ const UserCollection = require('../models/User')
 const ExerciseCollection = require('../models/Exercise')
 const { StatusCodes } = require('http-status-codes')
 
-const createUser = (req, res) => {
+const createUser = async (req, res) => {
 	//RETURN json (username: ... _id: ...)
-	res.send('createUser controller')
+	const { username: newUser } = req.body
+	await UserCollection.create({
+		username: newUser,
+	})
+	const createdUser = await UserCollection.findOne({
+		username: newUser,
+	})
+	res.status(StatusCodes.OK).json({
+		username: createdUser.username,
+		_id: createdUser._id,
+	})
 }
 
 const getAllUsers = (req, res) => {
