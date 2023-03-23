@@ -4,7 +4,7 @@ const cors = require('cors')
 require('dotenv').config()
 
 //connect db
-// const connectDB = require('./db/connect')
+const connectDB = require('./db/connect')
 
 //error handlers
 const notFoundMiddleware = require('./middleware/not-found')
@@ -29,9 +29,10 @@ app.use('/api', exerciseRouter)
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
 
+const port = process.env.PORT || 3000
 const start = async () => {
 	try {
-		// await connectDB(process.env.MONGO_URI)
+		await connectDB(process.env.MONGO_URI)
 		app.listen(port, () =>
 			console.log(`Server is listening on port ${port}...`)
 		)
