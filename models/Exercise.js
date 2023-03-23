@@ -15,7 +15,7 @@ const exerciseSchema = new mongoose.Schema({
 	},
 	date: {
 		type: Date,
-		default: Date.now(),
+		default: new Date().toUTCString(),
 	},
 	createdBy: {
 		type: mongoose.Types.ObjectId,
