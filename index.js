@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const bodyParser = require('body-parser')
 require('dotenv').config()
 
 //connect db
@@ -15,6 +16,8 @@ const exerciseRouter = require('./routes/exercise-tracker')
 
 //middleware
 app.use(cors())
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 app.use(express.json())
 app.use(express.static('public'))
 
