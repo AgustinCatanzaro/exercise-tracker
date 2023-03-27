@@ -48,6 +48,7 @@ const createExercise = async (req, res) => {
 			: (date = new Date(date))
 
 		//checking if the params received is not valid/empty if it is we use dont give the param to the schema so it use the default one.
+		console.log(`date content: ${date}`)
 		if (isNaN(date)) {
 			await ExerciseCollection.create({
 				description: description,
@@ -58,7 +59,7 @@ const createExercise = async (req, res) => {
 			await ExerciseCollection.create({
 				description: description,
 				duration: duration,
-				date: date.toUTCString(),
+				date: date.toDateString(),
 				createdBy: userId,
 			})
 		}
@@ -73,14 +74,14 @@ const createExercise = async (req, res) => {
 		res.status(StatusCodes.OK).json({
 			_id: userId,
 			username: userResponse.username,
-			date: exerciseResponse.date,
+			date: exerciseResponse.date.toDateString(),
 			duration: exerciseResponse.duration,
 			description: exerciseResponse.description,
 		})
 	} catch (error) {
 		console.log(error)
+		res.send('Somethin went wrong')
 	}
-	//might need to reformat date to coincide with example response... the exercise descrp is not unique, need to test what happend if i create 2 exercise with same descript and creatdby, it might break.
 }
 
 const getLogs = (req, res) => {
@@ -93,6 +94,8 @@ const getLogs = (req, res) => {
 	//The date property of any object in the log array that is returned from GET /api/users/:_id/logs should be a string. Use the dateString format of the Date API.
 	//You can add from, to and limit parameters to a GET /api/users/:_id/logs request to retrieve part of the log of any user. from and to are dates in yyyy-mm-dd format. limit is an integer of how many logs to send back.
 	res.send('getLogs controller')
+	//Response te Get logs
+	//{"_id":"641dc73e47ca29076a13e64e","username":"zTacaTestingUser","count":3,"log":[{"description":"desctest","duration":99,"date":"Fri Mar 24 2023"},{"description":"desctest","duration":99,"date":"Fri Mar 24 2023"},{"description":"desctest","duration":99,"date":"Fri Mar 24 2023"}]}
 }
 
 const staticTesting = async (req, res) => {
@@ -132,6 +135,16 @@ const staticTesting = async (req, res) => {
 	// 	console.log(error)
 	// }
 	// res.send('testing route')
+	//Date testing
+	// let testDate = new Date().toLocaleDateString('en-us', {
+	// 	weekday: 'long',
+	// 	year: 'numeric',
+	// 	month: 'short',
+	// 	day: 'numeric',
+	// })
+	const testingDate = new Date('Mon Oct 25 1999 21:00:00 GMT-0300')
+	console.log(testingDate.toDateString())
+	res.send()
 }
 
 module.exports = {
