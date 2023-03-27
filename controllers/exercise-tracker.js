@@ -90,20 +90,20 @@ const getLogs = async (req, res) => {
 		} = req.query
 		const { username: name } = await UserCollection.findById(userId)
 
-		//if from/to date where not send in the query we set it to max/min possible date value.
+		//if from/to date where not send in the query we set it to max/min possible date (unix) value.
 		if (!fromDate) {
 			fromDate = -8640000000000000
 		}
 		if (!toDate) {
 			toDate = 8640000000000000
 		}
+		const minDateRange = new Date(fromDate)
+		const maxDateRange = new Date(toDate)
+
 		//if the limit(amountElementsToShow) doesnt exits, we set it to max and if exist parse it to number
 		!amountElementsToShow
 			? (amountElementsToShow = Number.MAX_SAFE_INTEGER)
 			: (amountElementsToShow = Number(amountElementsToShow))
-
-		const minDateRange = new Date(fromDate)
-		const maxDateRange = new Date(toDate)
 
 		//getting user exercise list
 		let exerciseList = await ExerciseCollection.find({
