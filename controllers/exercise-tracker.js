@@ -35,10 +35,8 @@ const getAllUsers = async (req, res) => {
 
 const createExercise = async (req, res) => {
 	try {
-		console.log('im here')
 		let { description, duration, date } = req.body
 		const { _id: userId } = req.params
-		console.log(`description: ${description}`)
 		//if the params received is an unix, we need to parseInt it first to create the date
 		;/^\d+$/.test(date)
 			? (date = new Date(parseInt(date)))
