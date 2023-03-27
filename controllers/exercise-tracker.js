@@ -1,21 +1,26 @@
 const UserCollection = require('../models/User')
 const ExerciseCollection = require('../models/Exercise')
 const { StatusCodes } = require('http-status-codes')
+const { restart } = require('nodemon')
 
 const createUser = async (req, res) => {
-	const { username: newUser } = req.body
-	//creating a new User in the DB
-	await UserCollection.create({
-		username: newUser,
-	})
-	//Getting that created user from the db to get de generated _id, ***i think that every username should be unique but the example allows ditto entries
-	const createdUser = await UserCollection.findOne({
-		username: newUser,
-	})
-	res.status(StatusCodes.OK).json({
-		username: createdUser.username,
-		_id: createdUser._id,
-	})
+	try {
+		const { username: newUser } = req.body
+		//creating a new User in the DB
+		await UserCollection.create({
+			username: newUser,
+		})
+		//Getting that created user from the db to get de generated _id, ***i think that every username should be unique but the example allows ditto entries
+		const createdUser = await UserCollection.findOne({
+			username: newUser,
+		})
+		res.status(StatusCodes.OK).json({
+			username: createdUser.username,
+			_id: createdUser._id,
+		})
+	} catch (error) {
+		res.send(error)
+	}
 }
 
 const getAllUsers = async (req, res) => {
