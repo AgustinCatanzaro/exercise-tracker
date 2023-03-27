@@ -1,7 +1,6 @@
 const UserCollection = require('../models/User')
 const ExerciseCollection = require('../models/Exercise')
 const { StatusCodes } = require('http-status-codes')
-const { restart } = require('nodemon')
 
 const createUser = async (req, res) => {
 	try {
@@ -13,11 +12,9 @@ const createUser = async (req, res) => {
 		//Getting that created user from the db to get de generated _id, ***i think that every username should be unique but the example allows ditto entries
 		const createdUser = await UserCollection.findOne({
 			username: newUser,
-		})
-		res.status(StatusCodes.OK).json({
-			username: createdUser.username,
-			_id: createdUser._id,
-		})
+		}).select('username _id')
+
+		res.status(StatusCodes.OK).send(createdUser)
 	} catch (error) {
 		res.send(error)
 	}
@@ -37,11 +34,11 @@ const getAllUsers = async (req, res) => {
 }
 
 const createExercise = async (req, res) => {
-	const { _id: userId } = req.params
-	const { description, duration } = req.body
-	let { date } = req.body
-
 	try {
+		console.log('im here')
+		let { description, duration, date } = req.body
+		const { _id: userId } = req.params
+		console.log(`description: ${description}`)
 		//if the params received is an unix, we need to parseInt it first to create the date
 		;/^\d+$/.test(date)
 			? (date = new Date(parseInt(date)))
@@ -80,7 +77,7 @@ const createExercise = async (req, res) => {
 		})
 	} catch (error) {
 		console.log(error)
-		res.send('Somethin went wrong')
+		res.send('Something went wrong')
 	}
 }
 
